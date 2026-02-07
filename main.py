@@ -1,5 +1,5 @@
 import discord
-
+from discord import app_commands
 from openai import OpenAI
 import asyncio
 import os
@@ -10,18 +10,57 @@ client = OpenAI(
 )
 
 intents = discord.Intents.default()
-
 intents.message_content = True
 
 dcclient = discord.Client(intents=intents)
+tree = app_commands.CommandTree(dcclient)
+
+unmodded= set()
 
 @dcclient.event
 async def on_ready():
+    await tree.sync()
     print(f'We have logged in as {dcclient.user}')
+
+@tree.command(name="unmod", description="Disable moderation in this channel (owner only)")
+async def unmod(interaction: discord.Interaction):
+    if interaction.user.id != interaction.guild.owner_id:
+        await interaction.response.send_message(
+            "Only the server owner can use this command",
+            ephemeral=True
+            )
+        return
+
+    UNMODDED_CHANNELS.add(interaction.channel.id)
+    await interaction.response.send_message(
+        f"Moderation disabled in {interaction.channel.mention}",
+        ephemeral=True
+    )
+
+# ===== Slash command: /mod (OWNER ONLY) =====
+@tree.command(name="mod", description="Enable moderation in this channel (owner only)")
+async def mod(interaction: discord.Interaction):
+    if interaction.user.id != interaction.guild.owner_id:
+        await interaction.response.send_message(
+            "Only the server owner can use this command",
+            ephemeral=True
+        )
+        return
+
+    UNMODDED_CHANNELS.discard(interaction.channel.id)
+    await interaction.response.send_message(
+        f"Moderation enabled in {interaction.channel.mention}",
+        ephemeral=True
+    )
+
 @dcclient.event
 async def on_message(message):
     if message.author == dcclient.user:
         return
+
+    if message.channel.id in UNMODDED_CHANNELS:
+        return
+
     response = client.responses.create(
     input='''Check if the following message contains EXTREME internet brainrot.
 
