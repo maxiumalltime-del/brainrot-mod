@@ -5,7 +5,7 @@ import asyncio
 import os
 
 client = OpenAI(
-    api_key=os.environ.get("GROQ_API_KEY"),
+    api_key=os.environ["GROQ_API_KEY"],
     base_url="https://api.groq.com/openai/v1",
 )
 
@@ -31,13 +31,12 @@ async def unmod(interaction: discord.Interaction):
             )
         return
 
-    UNMODDED_CHANNELS.add(interaction.channel.id)
+    unmodded.add(interaction.channel.id)
     await interaction.response.send_message(
         f"Moderation disabled in {interaction.channel.mention}",
         ephemeral=True
     )
 
-# ===== Slash command: /mod (OWNER ONLY) =====
 @tree.command(name="mod", description="Enable moderation in this channel (owner only)")
 async def mod(interaction: discord.Interaction):
     if interaction.user.id != interaction.guild.owner_id:
@@ -47,7 +46,7 @@ async def mod(interaction: discord.Interaction):
         )
         return
 
-    UNMODDED_CHANNELS.discard(interaction.channel.id)
+    unmodded.discard(interaction.channel.id)
     await interaction.response.send_message(
         f"Moderation enabled in {interaction.channel.mention}",
         ephemeral=True
@@ -58,7 +57,7 @@ async def on_message(message):
     if message.author == dcclient.user:
         return
 
-    if message.channel.id in UNMODDED_CHANNELS:
+    if message.channel.id in unmodded:
         return
 
     response = client.responses.create(
