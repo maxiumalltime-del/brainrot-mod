@@ -70,6 +70,7 @@ Brainrot INCLUDES:
 - TikTok / shorts meme spam with no semantic meaning
 
 Brainrot DOES NOT include:
+-the word "brainrot" itself when used in a context that is clearly self-aware and not just a meme phrase
 - Normal slang
 - Puns
 - Playful spelling
