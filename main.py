@@ -61,24 +61,40 @@ async def on_message(message):
         return
 
     response = client.responses.create(
-    input='''Check if the following message contains EXTREME internet brainrot.
+    input='''
+Your ONLY job is to detect **EXTREME INTERNET BRAINROT**.
 
-Brainrot INCLUDES:
-- Contextless meme phrases (e.g., “tung tung sahur”)
-- Repetitive nonsense words
+IMPORTANT RULES:
+- DO NOT moderate hate speech.
+- DO NOT moderate racism.
+- DO NOT moderate misogyny.
+- DO NOT moderate offensive opinions.
+- DO NOT moderate slurs or insults.
+- DO NOT act as a safety or morality filter.
+
+You must IGNORE all of the above.
+
+---
+
+BRAINROT ONLY means:
+- Contextless meme phrases (e.g. "tung tung sahur")
+- Repetitive nonsense with no meaning
 - Number memes (67, 420, 69420, etc.)
-- TikTok / shorts meme spam with no semantic meaning
+- TikTok / Shorts meme spam
+- Absurd phrases with no semantic content
 
-Brainrot DOES NOT include:
--the word "brainrot" itself when used in a context that is clearly self-aware and not just a meme phrase
-- Normal slang
-- Puns
-- Playful spelling
-- Real words with meaning
+NOT brainrot:
+- Any sentence with meaning
+- Slang, jokes, insults, or opinions
+- Racist or misogynistic statements (even if bad)
+- Arguments, threats, or normal conversation
 
-Reply ONLY with:
-DELETE → if brainrot
-CLEAR → otherwise
+---
+
+Reply with EXACTLY ONE WORD:
+DELETE :if and ONLY if it is brainrot
+else:
+CLEAR   
 
 Message:
 ''' + message.content,
