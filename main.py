@@ -91,6 +91,7 @@ async def on_message(message):
                 input=prompt,
                 model="llama-3.1-8b-instant",
             )
+            print("API response:", response.output_text)
     except Exception as e:
         print("API error:", e)
         return
@@ -102,7 +103,7 @@ async def on_message(message):
     else ""
 )
 
-    if result == "DELETE".upper():
+    if result.upper() == "DELETE":
         me = message.guild.me
         if me and me.guild_permissions.manage_messages:
             await message.delete()
