@@ -8,6 +8,9 @@ client = OpenAI( api_key=os.environ["GROQ_API_KEY"], base_url="https://api.groq.
 intents = discord.Intents.default()
 intents.message_content = True
 
+delete_queue = asyncio.Queue()
+
+
 dcclient = discord.Client(intents=intents)
 tree = app_commands.CommandTree(dcclient)
 
@@ -21,6 +24,7 @@ async def on_ready():
 
     await tree.sync()
     print(f'We have logged in as {dcclient.user}')
+    dcclient.loop.create_task(delete_worker())
 
 @tree.command(name="unmod", description="Disable moderation in this channel (owner only)")
 
@@ -42,11 +46,55 @@ async def mod(interaction: discord.Interaction):
     unmodded.discard(interaction.channel.id)
     await interaction.response.send_message( f"Moderation enabled in {interaction.channel.mention}", ephemeral=True )
 
+async def delete_worker():
+    await dcclient.wait_until_ready()
+    while not dcclient.is_closed():
+        message = await delete_queue.get()
+
+        try:
+            me = message.guild.me
+            if me and me.guild_permissions.manage_messages:
+                await message.delete()
+
+                warn = await message.channel.send(
+                    "This message contains brainrot and has been deleted.",
+                    allowed_mentions=discord.AllowedMentions.none()
+                )
+
+                await asyncio.sleep(5)
+                await warn.delete()
+
+                # CRITICAL: rate limit protection
+                await asyncio.sleep(0.4)
+
+        except Exception as e:
+            print("Delete error:", e)
+
+        delete_queue.task_done()
+
+
 @dcclient.event
 async def on_message(message):
 
     if message.author.bot:
-            return
+        return
+
+    if not message.guild:
+        return
+
+    if message.author.id == message.guild.owner_id:
+        return
+    
+
+    content = message.content.strip().lower()
+
+    if (
+    content.isdigit() or
+    content in {"67"} 
+    ):
+       await delete_queue.put(message)
+       return
+
     if message.id in processed_messages:
         return
     
@@ -106,12 +154,7 @@ async def on_message(message):
 )
 
     if result.upper() == "DELETE":
-        me = message.guild.me
-        if me and me.guild_permissions.manage_messages:
-            await message.delete()
-            warn = await message.channel.send( "This message contains brainrot and has been deleted.", allowed_mentions=discord.AllowedMentions.none() )
-            await asyncio.sleep(5)
-            await warn.delete()
+        await delete_queue.put(message)
 
 token = os.environ.get("DISCORD_BOT_TOKEN")
 
