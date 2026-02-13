@@ -102,7 +102,7 @@ async def on_message(message):
     else ""
 )
 
-    if result == "DELETE":
+    if result == "DELETE".upper():
         me = message.guild.me
         if me and me.guild_permissions.manage_messages:
             await message.delete()
