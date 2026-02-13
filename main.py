@@ -81,10 +81,6 @@ async def on_message(message):
     if not message.guild:
         return
 
-    if message.author.id == message.guild.owner_id:
-        return
-    
-
     content = message.content.strip().lower()
 
     if (
