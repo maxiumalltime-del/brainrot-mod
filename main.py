@@ -70,6 +70,10 @@ Brainrot INCLUDES:
 - TikTok / shorts meme spam with no semantic meaning
 
 Brainrot DOES NOT include:
+- Weapon names or model numbers (M1911, M4A1, AK-47, etc.)
+- Game update announcements
+- Technical identifiers
+- Version numbers
 -the word "brainrot" itself when used in a context that is clearly self-aware and not just a meme phrase
 - Normal slang
 - Puns
@@ -85,7 +89,7 @@ Message:
     model="openai/gpt-oss-20b",
 )
 
-    if response.output_text == "DELETE":
+    if response.output_text.strip() == "DELETE":
         print("Brainrot detected, deleting message.")
         await message.delete()
         warn=await message.channel.send("This message contains brainrot and has been deleted.")
