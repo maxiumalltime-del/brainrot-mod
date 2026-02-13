@@ -81,7 +81,9 @@ async def on_message(message):
           - Normal slang
           - Puns
           - Playful spelling
-          - Real words with meaning Reply ONLY with: DELETE → if brainrot CLEAR → otherwise Message:
+          - Real words with meaning Reply ONLY with: 
+          "DELETE" if brainrot 
+          "CLEAR"  otherwise Message:
           {message.content}""" 
     
     try:
