@@ -83,12 +83,6 @@ async def on_message(message):
 
     content = message.content.strip().lower()
 
-    if (
-    content.isdigit() or
-    content in {"67"} 
-    ):
-       await delete_queue.put(message)
-       return
 
     if message.id in processed_messages:
         return
@@ -146,9 +140,8 @@ async def on_message(message):
     else ""
 )
 
-    if "DELETE" in result.upper():
+    if result.strip().upper() == "DELETE":
         await delete_queue.put(message)
-
 token = os.environ.get("DISCORD_BOT_TOKEN")
 
 if not token:
