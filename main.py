@@ -11,7 +11,7 @@ intents.message_content = True
 dcclient = discord.Client(intents=intents) 
 tree = app_commands.CommandTree(dcclient)
 
-semaphore = asyncio.Semaphore(5) 
+semaphore = asyncio.Semaphore(100) 
 unmodded= set()
 
 processed_messages = set()
