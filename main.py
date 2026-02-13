@@ -64,7 +64,6 @@ async def delete_worker():
                 await asyncio.sleep(5)
                 await warn.delete()
 
-                # CRITICAL: rate limit protection
                 await asyncio.sleep(0.4)
 
         except Exception as e:
@@ -100,8 +99,6 @@ async def on_message(message):
     
     processed_messages.add(message.id)
 
-    if not message.guild:
-        return
     
     if not message.content.strip():
         return
@@ -139,7 +136,7 @@ async def on_message(message):
             response = await asyncio.to_thread(
                 client.responses.create,
                 input=prompt,
-                model="llama-3.1-8b-instant",
+                model="openai/gpt-oss-120b",
             )
             print("API response:", response.output_text)
     except Exception as e:
@@ -153,7 +150,7 @@ async def on_message(message):
     else ""
 )
 
-    if result.upper() == "DELETE":
+    if "DELETE" in result.upper():
         await delete_queue.put(message)
 
 token = os.environ.get("DISCORD_BOT_TOKEN")
